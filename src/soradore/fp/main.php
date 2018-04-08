@@ -35,13 +35,13 @@ class main extends PluginBase implements Listener{
 
     public function onEnable(){
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        $this->init();
+        $this->baseInit();
     }
 
 
 
 
-    public function init(){
+    public function baseInit(){
         $this->canvasBlocks = [
                                "Wool" => 35,
                                ];
