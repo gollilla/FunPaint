@@ -120,7 +120,7 @@ class main extends PluginBase implements Listener{
 
     
 
-    public function setPlayerStatus(Player $player, Bool $val = false){
+    public function setPlayerStatus(Player $player, bool $val = false){
         $this->status[$player->getName()] = $val;
     }
 
