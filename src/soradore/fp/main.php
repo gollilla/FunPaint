@@ -7,6 +7,7 @@ namespace soradore\fp;
 
 /* Base */
 use pocketmine\plugin\PluginBase;
+use pocketmine\Player;
 
 /* Events */
 use pocketmine\event\Listener;
@@ -18,17 +19,33 @@ use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 
 use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
+
+
+use pocketmine\event\block\BlockBreakEvent;
+use pocketmine\event\block\BlockPlaceEvent;
+
 
 use pocketmine\block\Block;
 use pocketmine\item\T\Item;
 
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 
-class main extends PluginBase implements Listener{
+
+
+class main extends PluginBase implements Listener 
+{
 
 
     /*************************** Setting Area */
+
+
+
+    /**
+     *   int   Block Id
+     */
+    define("JOIN_BLOCK", 2);
 
 
 
@@ -45,6 +62,9 @@ class main extends PluginBase implements Listener{
         $this->canvasBlocks = [
                                "Wool" => 35,
                                ];
+        $this->status = [];
+        $this->players = [];
+        $this->game = false;
     }
 
 
@@ -126,6 +146,24 @@ class main extends PluginBase implements Listener{
 
 
 
+    /**
+     * @var    Player $player 
+     * @return bool
+     */
+    
+    public function isPlayer(Player $player){
+        return in_array($player, $this->players, true);
+    }
+
+
+    
+
+    public function isJoinBlock(Block $block){
+        return $block->getId() == self::JOIN_BLOCK;
+    }
+
+
+
     /**************************** Event Area */
 
 
@@ -148,7 +186,33 @@ class main extends PluginBase implements Listener{
 
     public function onJoin(PlayerJoinEvent $ev){
         $player = $ev->getPlayer();
-        $this->setPlayerStatus($player);
+        $this->setPlayerStatus($player, true);
+    }
+
+
+
+
+    public function onBreak(BlockBreakEvent $ev){
+        $ev->setCancelled();
+    }
+
+
+
+    public function onPlace(BlockPlaceEvent $ev){
+        $ev->setCancelled();
+    }
+
+
+
+
+    public function onTouch(PlayerInteractEvent $ev){
+        $player = $ev->getPlayer();
+        $block = $ev->getBlock();
+        if($this->isJoinBlock($block)){
+            if(!$this->isPlayer($player)){
+                $this->addPlayer($player);
+            }
+        }
     }
 
 
